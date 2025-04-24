@@ -25,7 +25,7 @@ jobs:
 
       - name: Run script
         run: |
-          python <your_script_name>.py  # Replace with the name of your Python script
+          python trial.py  # Replace with the name of your Python script
 
       - name: Commit and push output
         run: |
