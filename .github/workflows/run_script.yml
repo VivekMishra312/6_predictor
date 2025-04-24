@@ -2,42 +2,48 @@ name: Run Python Script Every Hour
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Every hour (UTC time)
-  workflow_dispatch:      # Allow manual run
+    - cron: '0 * * * *'  # Run every hour (UTC time)
+  workflow_dispatch:      # Allow manual triggering of workflow
 
 jobs:
   run_script:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           persist-credentials: false # Disables default token to use PAT
 
+      # Step 2: Set up Python
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'  # Set the Python version you want to use
+          python-version: '3.8'  # Specify the Python version
 
+      # Step 3: Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements.txt  # Ensure you have a requirements.txt file
 
+      # Step 4: Run the Python script
       - name: Run script
         run: |
-          python trial.py  # Replace with the name of your Python script
+          python trial.py  # Replace with the name of your script
 
+      # Step 5: Configure Git for committing and pushing changes
       - name: Configure Git
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
+      # Step 6: Commit and push the updated prediction files
       - name: Commit and Push Updates
         env:
-          GH_PAT: ${{ secrets.GH_PAT }}  # Use your Personal Access Token (PAT)
+          GH_PAT: ${{ secrets.GH_PAT }}  # Use your Personal Access Token
         run: |
-          git add prediction/*          # Add updated output files
-          git commit -m "Update predictions (auto-run)"
+          git add prediction/*          # Add all updated files in the prediction folder
+          git diff-index --quiet HEAD || git commit -m "Update predictions (auto-run)"
           git push https://${{ secrets.GH_PAT }}@github.com/<username>/<repo>.git HEAD:main
