@@ -90,7 +90,9 @@ def predict_slots(location):
             avg = fetch_slot_avg(location, day_date, slot_start, slot_end, prev_days_data, apply_variation)
 
             # Include the slot data
-            final = {p: round(avg[p] * 0.8) if avg.get(p) != "NA" else "NA"
+            final = {p: round(avg[p] * 0.8) if p in avg and avg[p] != "NA" else "NA"
+    for p in POLLUTANTS
+            }
     for p in POLLUTANTS
             }
             final["date"] = day_str
